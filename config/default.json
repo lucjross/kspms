@@ -1,0 +1,12 @@
+{
+	"development": {
+		"db": {
+			"uri": "localhost:27017/kspms"
+		}
+	},
+	"production": {
+		"db": {
+			"uri": "mongodb://nodejitsu:40c33e9401ce21283c58c67dfa5964c8@troup.mongohq.com:10047/nodejitsudb7208798269"
+		}
+	}
+}

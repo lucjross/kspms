@@ -1,0 +1,76 @@
+extends layout
+
+block scripts
+    script: include ../public/javascripts/pool.js
+
+block content
+    div.row
+        ul.breadcrumb
+            li
+                a(href='/') Pools 
+                span.divider /
+            li #{poolName} 
+
+            include _loginMsg.jade
+
+    div.content
+        table#subjectTable.tablesorter
+          thead
+            tr
+                th Subject Name
+                th ID
+                th E-Mail
+                th Instructor Name
+                th Course
+                th Unique
+                th File
+                th Status
+                th Credits Earned
+                th
+          tbody
+            each s, i in subjects
+
+                tr
+                    td.cutoff #{s.lastName}, #{s.firstName}
+                    td.text-right.cutoff #{s.utId}
+                    td.cutoff: a(href='mailto:#{s.email}') #{s.email}
+                    td.cutoff #{s.instructor.lastName}, #{s.instructor.firstName}
+                    td.text-left.cutoff(title='#{s.courseId}') #{s.courseId}
+                    td.text-right.cutoff #{s.uniqueId}
+                    td.text-center
+                        span.file-view-reimport(style=s.file.originalName ? '' : 'display: none')
+                            a.view-link.tooltip(
+                                    href='/subject/#{s._id}/view-file'
+                                    title='#{s.file.originalName}'
+                                    target='_blank') View 
+                            | | 
+                            a.file-import-link(href='#') Reimport
+                        span.file-import(style=s.file.originalName ? 'display: none' : '')
+                            a.file-import-link(href='#') Import
+                        span.file-uploading(style='display: none')
+                            | Uploading...
+
+                        form.vform(action='/subject/#{s._id}/update' method='POST' enctype='multipart/form-data')
+                            input(type='file' name='doc file input' style='display: none' accept='.docx')/
+
+                    td
+                        form.vform(action='/subject/#{s._id}/update' method='POST' enctype='multipart/form-data')
+                            select(name='status')
+                                option(value='#{s.status}' selected) [#{s.status}]
+                    td.text-right #{s.creditsEarned}
+                    td.text-center
+                        a.remove-link(href='/subject/#{s._id}/remove') x
+
+        p
+            br/
+            a(href='/pool/#{_poolId}/add-subject')
+                strong + 
+                | Add subject
+            br/
+            a.list-import-link(href='/pool/#{_poolId}/import-subjects')
+                strong + 
+                | Import subject list
+            //- form(action='/pool/#{_poolId}/import-subjects' method='POST'
+            //-         enctype='multipart/form-data' style='display: none')
+            //-     input(type='file' name='list file input' id='listFileInput' style='display: none')
+

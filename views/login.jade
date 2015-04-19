@@ -1,0 +1,39 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			
+			var $inputs = $('input');
+			var $submit = $('button[type="submit"]');
+
+			$inputs.first().focus();
+
+			$inputs.on('input', function () {
+
+				$submit.prop('disabled', $(this).val() === '');
+			});
+		});
+
+
+block content
+	div.row
+		ul.breadcrumb
+			li Log in
+	div.content
+		if error
+			div.alert.error #{error}
+
+		div.c4: form.hform(action='/login' method='POST')
+			label Username
+			input(type='text' name='username' value=(username || ''))
+
+			label Password
+			input(type='password' name='password')
+
+			button(type='submit' disabled) Log in
+
+			p: a(href='/new-user')
+				strong + 
+				| New user

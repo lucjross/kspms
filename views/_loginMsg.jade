@@ -1,0 +1,10 @@
+span.logged-in
+	| Logged in as 
+
+	- var decor = /kadie/i.test(user.username) || /kadie/i.test(user.name.givenName) ? '♥ ' : ''
+	span(style='color: #e00') #{decor}
+	strong #{user.username} 
+	span(style='color: #e00') #{decor}
+
+	| | 
+	a(href='/logout') Log out

@@ -1,0 +1,56 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			
+			$('input').first().focus();
+
+			var $passFields = $('input[name^="password"]');
+			var $passwordRepeat = $('#passwordRepeat');
+			var $submit = $('button[type="submit"]');
+			$passFields.on('input', function () {
+
+				var hasValue = !! $passFields.get(0).value;
+				var match = $passFields.get(0).value === $passFields.get(1).value;
+				$submit.prop('disabled', ! (match && hasValue));
+				$passwordRepeat.text(match ? '' : 'Input doesn\'t match');
+			});
+		});
+
+
+block content
+	div.row
+		ul.breadcrumb
+			li New user
+	div.content
+		div.c4: form.hform(action='/new-user' method='POST')
+			label Last name
+			input(type='text' name='familyName')
+
+			label First name
+			input(type='text' name='givenName')
+
+			label E-mail
+			input(type='text' name='email')
+
+			label Username
+			input(type='text' name='username')
+
+			label Password
+			input(type='password' name='password')
+
+			label Password 
+				em (repeat)
+			input(type='password' name='password repeat')
+
+			button(type='submit' disabled) Submit
+
+		div.c4
+			p.err #{errors && errors.familyName ? errors.familyName.msg : ''}
+			p.err #{errors && errors.givenName ? errors.givenName.msg : ''}
+			p.err #{errors && errors.email ? errors.email.msg : ''}
+			p.err #{errors && errors.username ? errors.username.msg : ''}
+			p.err #{errors && errors.password ? errors.password.msg : ''}
+			p#passwordRepeat.err

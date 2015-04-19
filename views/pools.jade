@@ -1,0 +1,27 @@
+extends layout
+
+block scripts
+	script: include ../public/javascripts/pools.js
+
+block content
+	div.row
+		ul.breadcrumb
+			li Pools
+			
+			include _loginMsg.jade
+	div.content
+		div.c3.centered
+			div.table
+				div.tr
+					span.th Name
+					span.th
+				each pool, i in pools
+					div.tr
+						span.td: a(href='/pool/#{pool._id}') #{pool.name}
+						span.td.text-center
+							a.remove-link(href='/pool/#{pool._id}/remove') x
+
+			p: a(href='/add-pool')
+				strong + 
+				| Add pool
+

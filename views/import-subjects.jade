@@ -1,0 +1,51 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			
+			$('input').first().focus();
+
+			$('input[name="file"]').on('change', function () {
+
+				console.log($(this).val());
+
+				if (! /\.csv$/i.test($(this).val())) {
+
+					$('button[type="submit"]').prop('disabled', true);
+				}
+				else {
+					$('button[type="submit"]').prop('disabled', false);
+				}
+			});
+		});
+
+
+block content
+	div.row
+		ul.breadcrumb
+			li
+				a(href='/') Pools 
+				span.divider /
+			li
+				a(href='/pool/#{_poolId}') #{poolName} 
+				span.divider /
+			li Import Subjects
+
+			include _loginMsg.jade
+	div.content
+		div.c6: form.hform(
+				action='/pool/#{_poolId}/import-subjects'
+				method='POST'
+				enctype='multipart/form-data')
+			label Instructor Last Name
+			input(type='text' name='instructor_lastName')
+
+			label Instructor First Name
+			input(type='text' name='instructor_firstName')
+
+			label File (CSV)
+			input(type='file' name='file' accept='.csv')
+
+			button(type='submit' disabled) Add

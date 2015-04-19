@@ -1,0 +1,48 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			$('input').first().focus();
+		});
+
+block content
+	div.row
+		ul.breadcrumb
+			li
+				a(href='/') Pools 
+				span.divider /
+			li
+				a(href='/pool/#{_poolId}') #{poolName} 
+				span.divider /
+			li Add Subject
+
+			include _loginMsg.jade
+	div.content
+		div.c6: form.hform(action='/pool/#{_poolId}/add-subject' method='POST')
+			label Last Name
+			input(type='text' name='lastName')
+
+			label First Name
+			input(type='text' name='firstName')
+
+			label ID
+			input(type='text' name='utId')
+
+			label E-Mail
+			input(type='text' name='email')
+
+			label Instructor Last Name
+			input(type='text' name='instructor_lastName' value='#{lastInstructor_lastName}')
+
+			label Instructor First Name
+			input(type='text' name='instructor_firstName' value='#{lastInstructor_firstName}')
+
+			label Course ID
+			input(type='text' name='courseId' value='#{lastCourseId}')
+
+			label Unique ID
+			input(type='text' name='uniqueId' value='#{lastUniqueId}')
+
+			button(type='submit') Add

@@ -1,0 +1,24 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			$('input').first().focus();
+		});
+
+block content
+	div.row
+		ul.breadcrumb
+			li
+				a(href='/') Pools 
+				span.divider /
+			li Add Pool
+			
+			include _loginMsg.jade
+	div.content
+		div.c6: form.hform(action='/add-pool' method='POST')
+			label Name
+			input(type='text' name='name' placeholder='<semester> <year>')
+
+			button(type='submit') Add
