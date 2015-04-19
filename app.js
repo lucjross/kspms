@@ -40,7 +40,7 @@ passport.deserializeUser(User.deserializeUser());
 var connect = function () {
 
     var uri;
-    if ((app.get('env') === production) || process.env.OPENSHIFT_MONGODB_DB_URL) {
+    if ((app.get('env') === 'production') || process.env.OPENSHIFT_MONGODB_DB_URL) {
         uri = process.env.OPENSHIFT_MONGODB_DB_URL;
     }
     else {
