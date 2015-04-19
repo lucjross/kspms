@@ -38,8 +38,16 @@ passport.deserializeUser(User.deserializeUser());
 //
 
 var connect = function () {
-    mongoose.connect(config.get(app.get('env') + '.db.uri'), {
-    // mongoose.connect('tingodb://' + __dirname + '/data', {
+
+    var uri;
+    if ((app.get('env') === production) || process.env.OPENSHIFT_MONGODB_DB_URL) {
+        uri = process.env.OPENSHIFT_MONGODB_DB_URL;
+    }
+    else {
+        uri = "localhost:27017/kspms";
+    }
+
+    mongoose.connect(uri, {
         server: {
             socketOptions: {
                 keepAlive: 1
