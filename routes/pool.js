@@ -21,24 +21,25 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 		var conditions = { '_poolId': _poolId };
 		var q = req.query;
 		if (q !== {}) {
-			if (/^[a-z ,.'-]+$/i.test(q.instructorLastName)) {
+			if (/^[a-z ,.'-]{1,50}$/i.test(q.instructorLastName)) {
+				// contains
 				conditions['instructor.lastName'] = new RegExp(q.instructorLastName, 'gi');
 			}
 			else delete q.instructorLastName;
 
 			if (/^\d{1,10}$/.test(q.unique)) {
+				// equals
 				var unique = parseInt(q.unique, 10);
 				conditions['uniqueId'] = unique;
 			}
 			else delete q.unique;
 
 			if (/^[A-Z]{1,2}$/.test(q.status)) {
+				// equals
 				conditions['status'] = q.status;
 			}
 			else delete q.status;
 		}
-
-		console.log('conditions=', conditions);
 		
 		Subject.find(conditions, function (err, subjects) {
 

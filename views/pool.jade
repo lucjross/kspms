@@ -44,18 +44,28 @@ block content
         table#subjectTable.tablesorter
           thead
             tr
+                mixin filterText(rel, str)
+                    if str
+                        br/
+                        em: i
+                            | (#{rel} 
+                            strong #{str})
+
                 th Subject Name
                 th ID
                 th E-Mail
                 th
                     | Instructor Name
-                    if query.instructorLastName
-                        br/
-                        small containing "#{query.instructorLastName}"
+                    +filterText('contains', query.instructorLastName)
                 th Course
-                th Unique
+                th
+                    | Unique
+                    +filterText('equals', query.unique)
                 th File
-                th Status
+                th
+                    | Status
+                    if query.status
+                        +filterText('equals', statusPaths[query.status].text)
                 th Credits Earned
                 th
           tbody
