@@ -86,10 +86,19 @@ span.td {
 	font-size: 14px;
 }
 
-a.remove-link {
-	color: #f00;
-	&:hover {
-		color: #333;
+a {
+	&.remove-link {
+		color: #f00;
+		&:hover {
+			color: #833;
+		}
+	}
+
+	&.comment-link {
+		color: #0b0;
+		&:hover {
+			color: #383;
+		}
 	}
 }
 
@@ -141,4 +150,12 @@ table.tablesorter thead tr .headerSortDown {
 }
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 	background-color: #bce8f1;
+}
+
+div.comment-popover {
+	position: absolute;
+	z-index: 10;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	padding: 10px;
 }

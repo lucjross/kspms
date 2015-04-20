@@ -80,6 +80,7 @@ function updateSubject(_subjectId, update, req, res, customResponse) {
 		if (err) {
 			console.error(req.path + ': err=', err);
 			res.sendStatus(500);
+			return;
 		}
 
 		res.status(200).send(customResponse);
@@ -150,6 +151,7 @@ router.get('/subject/:subjectId/view-file', auth.isAuthenticated, function (req,
 		if (err) {
 			console.error(err);
 			res.sendStatus(404);
+			return;
 		}
 
 		res.send(subject.file.html);
@@ -160,12 +162,28 @@ router.post('/subject/:subjectId/update-status', auth.isAuthenticated, function 
 	
 	var _subjectId = req.params.subjectId;
 
-	if (! req.body.status) {
+	if (! /^[A-Z]{1,2}$/.test(req.body.status)) {
 		res.sendStatus(400);
+		return;
 	}
 
 	var update = {
 		status: req.body.status
+	}
+	updateSubject(_subjectId, update, req, res);
+});
+
+router.post('/subject/:subjectId/update-comments', auth.isAuthenticated, function (req, res) {
+
+	var _subjectId = req.params.subjectId;
+
+	if (typeof req.body.comments !== 'string') {
+		res.sendStatus(400);
+		return;
+	}
+
+	var update = {
+		comments: req.body.comments
 	}
 	updateSubject(_subjectId, update, req, res);
 });

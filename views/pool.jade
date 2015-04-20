@@ -41,39 +41,65 @@ block content
                 button(type='submit') Update
 
     div.row: div.content
-        table#subjectTable.tablesorter
+        table#subjectTable.tablesorter(data-resizable-columns-id='pool')
           thead
             tr
-                mixin filterText(rel, str)
+                mixin filterText(rel, str, quotes)
                     if str
                         br/
                         em: i
                             | (#{rel} 
-                            strong #{str})
+                            if quotes
+                                | "
+                            | #{str}
+                            if quotes
+                                | "
+                            | )
 
-                th Subject Name
-                th ID
-                th E-Mail
-                th
+                th(data-resizable-column-id='pool__Subject_Name'
+                       title='Click "+" to edit comments; underlined has comments')
+                    | Subject Name
+                th(data-resizable-column-id='pool__ID')
+                    | ID
+                th(data-resizable-column-id='pool__E-Mail')
+                    | E-Mail
+                th(data-resizable-column-id='pool__Instructor_Name')
                     | Instructor Name
-                    +filterText('contains', query.instructorLastName)
-                th Course
-                th
+                    +filterText('contains', query.instructorLastName, true)
+                th(data-resizable-column-id='pool__Course')
+                    | Course
+                th(data-resizable-column-id='pool__Unique')
                     | Unique
-                    +filterText('equals', query.unique)
-                th File
-                th
+                    +filterText('=', query.unique, false)
+                th(data-resizable-column-id='pool__File')
+                    | File
+                th(data-resizable-column-id='pool__Status')
                     | Status
                     if query.status
-                        +filterText('equals', statusPaths[query.status].text)
-                th Credits Earned
-                th
+                        +filterText('=', statusPaths[query.status].text, true)
+                th(data-resizable-column-id='pool__Credits_Earned')
+                    | Credits Earned
+                th(data-resizable-column-id='pool__')
           tbody
             each s, i in subjects
 
                 tr
-                    td.cutoff #{s.lastName}, #{s.firstName}
-                    td.text-right.cutoff #{s.utId}
+                    td.cutoff
+                        a.comment-link(href='#' title='Edit Comments')
+                            strong + 
+                        span(style='text-decoration: #{s.comments ? "underline" : ""}')
+                            | #{s.lastName}, #{s.firstName}
+                    td.text-right.cutoff
+                        div.comment-popover(style='display: none')
+                            form.hform(style='max-width: 100%' action='/subject/#{s._id}/update' method='POST')
+                                div.c1
+                                    label Comments:
+                                div.c10
+                                    input(type='text' name='comments' style='width: 100%'
+                                        data-saved-value=(s.comments || '') placeholder='None')
+                                div.c1
+                                    button.small(type='submit') Save
+                        | #{s.utId}
                     td.cutoff: a(href='mailto:#{s.email}') #{s.email}
                     td.cutoff #{s.instructor.lastName}, #{s.instructor.firstName}
                     td.text-left.cutoff(title='#{s.courseId}') #{s.courseId}
@@ -100,7 +126,9 @@ block content
                                 option(value='#{s.status}' selected) [#{s.status}]
                     td.text-right #{s.creditsEarned}
                     td.text-center
-                        a.remove-link(href='/subject/#{s._id}/remove') x
+                        a.remove-link(href='/subject/#{s._id}/remove' title='Remove Subject'
+                                data-subject='#{s.lastName}, #{s.firstName}')
+                            strong x
 
     div.row: div.content
         div.c2

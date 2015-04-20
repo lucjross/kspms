@@ -66,7 +66,11 @@ span.td {
 a.remove-link {
   color: #f00; }
   a.remove-link:hover {
-    color: #333; }
+    color: #833; }
+a.comment-link {
+  color: #0b0; }
+  a.comment-link:hover {
+    color: #383; }
 
 .tooltip:hover:after {
   width: 240px; }
@@ -107,5 +111,12 @@ table.tablesorter thead tr .headerSortDown {
 
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
   background-color: #bce8f1; }
+
+div.comment-popover {
+  position: absolute;
+  z-index: 10;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px; }
 
 /*# sourceMappingURL=style.css.map */

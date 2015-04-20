@@ -25,6 +25,8 @@ $.when(
 		initTableSorter();
 		initResizableColumns();
 		bindFiltersMenuToggle();
+		bindRemoveConfirm();
+		bindEditComments();
 	});
 });
 
@@ -69,6 +71,15 @@ function populateStatusSelects() {
 		var url = $this.closest('form').prop('action') + '-status';
 		var status = $this.children(':selected').val();
 		$.post(url, { status: status })
+		.done(function () {
+			// now check if the new status is supposed to be filtered out.
+			// if so then refresh the page.
+
+			var selectedFilterVal = $('div#filtersMenu select option:selected').val();
+			if (selectedFilterVal !== '' && selectedFilterVal !== status) {
+				window.location.href = window.location.href;
+			}
+		})
 		.fail(function (jqXHR, textStatus, err) {
 			error(err);
 		});
@@ -163,7 +174,10 @@ function initTableSorter() {
 
 function initResizableColumns() {
 	var $subjectTable = $('table#subjectTable');
-	$subjectTable.resizableColumns();
+	$subjectTable.resizableColumns({
+		// uses store.js
+		store: (store && store.enabled) ? store : undefined
+	});
 }
 
 function bindFiltersMenuToggle() {
@@ -184,5 +198,82 @@ function bindFiltersMenuToggle() {
 			$filtersMenu.slideDown();
 		}
 
+	});
+}
+
+function bindRemoveConfirm() {
+	$('a.remove-link').on('click', function(e) {
+		e.preventDefault();
+		var $this = $(this);
+		var name = $this.attr('data-subject');
+		var ok = window.confirm('Are you sure you want to remove subject ' + name + ', from the pool?');
+		if (ok) {
+			window.location.href = $this.attr('href');
+		}
+	});
+}
+
+function bindEditComments() {
+	$('a.comment-link').on('click', function (e) {
+		e.preventDefault();
+
+		var $this = $(this);
+		var $td = $this.closest('td');
+		var $nextTd = $td.next();
+		var $outerDiv = $nextTd.find('div.comment-popover');
+		var html = $this.html();
+		var $input = $outerDiv.find('input');
+		var $nameSpan = $td.find('span');
+		var savedValue = $input.attr('data-saved-value');
+
+		if ($outerDiv.is(':visible')) {
+			if ($input.val() !== savedValue) {
+				var ok = window.confirm('Are you sure you want to close the comments without saving?');
+				if (! ok) {
+					return;
+				}
+			}
+
+			// close
+			$outerDiv.hide();
+			$input.val($input.attr('data-saved-value'));
+			$this.html(html.replace(/-/g, '+'));
+			$nameSpan.css('text-decoration', savedValue.length > 0 ? 'underline' : 'none');
+			return;
+		}
+
+		// open
+		var $tr = $td.closest('tr');
+		var $lastTd = $tr.find('td').last();
+
+		$outerDiv.css({
+			'height': ($tr.height() + 1) + 'px',
+			'width': ($tr.outerWidth() - $td.outerWidth() + 1) + 'px',
+			'left': $nextTd.position().left + 'px',
+			'top': $td.position().top + 'px'
+		});
+		$outerDiv.show();
+		$input.val($input.attr('data-saved-value'));
+		$this.html(html.replace(/\+/g, '-'));
+		$input.focus();
+	});
+
+	$('div.comment-popover').find('form').on('submit', function (e) {
+		e.preventDefault();
+
+		var $this = $(this);
+		var url = $this.attr('action') + '-comments';
+		var $input = $this.find('input');
+		var comments = $input.val();
+		$.post(url, { comments: comments })
+		.done(function () {
+			// update the saved value
+			$input.attr('data-saved-value', comments);
+			$this.closest('tr').find('a.comment-link').click(); // close comments box
+			
+		})
+		.fail(function (jqXHR, textStatus, err) {
+			error(err);
+		});
 	});
 }
