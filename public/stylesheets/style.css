@@ -1,7 +1,7 @@
 .content {
   width: 100%;
   height: auto;
-  padding: 30px 12px; }
+  padding: 0px 12px; }
 
 header h1 {
   text-shadow: 0 2px 0 #eff; }
@@ -79,6 +79,9 @@ td.cutoff {
 
 .hform input[type="file"] {
   width: 60%; }
+
+.vform label, .hform label {
+  line-height: 30px; }
 
 p {
   line-height: 30px; }

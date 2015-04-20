@@ -9,10 +9,6 @@ var multer = require('multer'); // for multipart form
 var passport = require('passport');
 var expressSession = require('express-session');
 var expressValidator = require('express-validator');
-
-// global.TUNGUS_DB_OPTIONS = { nativeObjectID: true, searchInArray: true }; // WTF
-// var tungus = require('tungus'); // TingoDB impl of Mongoose (include prior to mongoose)
-
 var mongoose = require('mongoose');
 
 var User = require('./models/models').User;

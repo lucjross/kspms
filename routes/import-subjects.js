@@ -101,7 +101,7 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 						},
 						courseId: subjectCourseId,
 						uniqueId: subjectUniqueId,
-						status: 'N'
+						status: 'NE'
 					});
 				});
 

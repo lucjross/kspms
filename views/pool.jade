@@ -13,14 +13,45 @@ block content
 
             include _loginMsg.jade
 
-    div.content
+    div.row: div.content
+        div.c2
+            p
+                a(href='#filters' id='filtersMenuToggle')
+                    strong - 
+                    | Filters
+        div#filtersMenu.c6
+            form.hform(action='/pool/#{_poolId}' method='GET')
+                fieldset
+                    label Instructor Last Name
+                    span.pre(style='width: 71px') contains
+                    input.pre(style='width: 169px' type='text' name='instructorLastName'
+                            placeholder='<String>' value=(query.instructorLastName || ''))
+                fieldset
+                    label Unique
+                    span.pre(style='width: 30px') =
+                    input.pre(style='width: 210px' type='text' name='unique'
+                            placeholder='<Number>' value=(query.unique || ''))
+                fieldset
+                    label Status
+                    select(name='status' style='width: 240px')
+                        option(value='' selected=!query.status)
+                        each val, key in statusPaths
+                            option(value='#{key}' selected=(query.status === key))
+                                | #{val.text}
+                button(type='submit') Update
+
+    div.row: div.content
         table#subjectTable.tablesorter
           thead
             tr
                 th Subject Name
                 th ID
                 th E-Mail
-                th Instructor Name
+                th
+                    | Instructor Name
+                    if query.instructorLastName
+                        br/
+                        small containing "#{query.instructorLastName}"
                 th Course
                 th Unique
                 th File
@@ -61,16 +92,17 @@ block content
                     td.text-center
                         a.remove-link(href='/subject/#{s._id}/remove') x
 
-        p
-            br/
-            a(href='/pool/#{_poolId}/add-subject')
-                strong + 
-                | Add subject
-            br/
-            a.list-import-link(href='/pool/#{_poolId}/import-subjects')
-                strong + 
-                | Import subject list
-            //- form(action='/pool/#{_poolId}/import-subjects' method='POST'
-            //-         enctype='multipart/form-data' style='display: none')
-            //-     input(type='file' name='list file input' id='listFileInput' style='display: none')
+    div.row: div.content
+        div.c2
+            p
+                a(href='/pool/#{_poolId}/add-subject')
+                    strong + 
+                    | Add subject
+                br/
+                a.list-import-link(href='/pool/#{_poolId}/import-subjects')
+                    strong + 
+                    | Import subject list
+                //- form(action='/pool/#{_poolId}/import-subjects' method='POST'
+                //-         enctype='multipart/form-data' style='display: none')
+                //-     input(type='file' name='list file input' id='listFileInput' style='display: none')
 

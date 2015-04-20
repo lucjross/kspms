@@ -6,6 +6,11 @@ var mammoth = require('mammoth');
 var auth = require('../helpers/auth');
 var Subject = require('../models/models').Subject;
 var Pool = require('../models/models').Pool;
+var statusPaths = require('../helpers/statusPaths');
+
+router.get('/statusPaths', function (req, res) {
+	res.send(statusPaths)
+});
 
 router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 	
@@ -13,14 +18,36 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 
 	Pool.findById(_poolId, function (err, pool) {
 		
-		var poolName = pool.name;
+		var conditions = { '_poolId': _poolId };
+		var q = req.query;
+		if (q !== {}) {
+			if (/^[a-z ,.'-]+$/i.test(q.instructorLastName)) {
+				conditions['instructor.lastName'] = new RegExp(q.instructorLastName, 'gi');
+			}
+			else delete q.instructorLastName;
+
+			if (/^\d{1,10}$/.test(q.unique)) {
+				var unique = parseInt(q.unique, 10);
+				conditions['uniqueId'] = unique;
+			}
+			else delete q.unique;
+
+			if (/^[A-Z]{1,2}$/.test(q.status)) {
+				conditions['status'] = q.status;
+			}
+			else delete q.status;
+		}
+
+		console.log('conditions=', conditions);
 		
-		Subject.find({ '_poolId': _poolId }, function (err, subjects) {
+		Subject.find(conditions, function (err, subjects) {
 
 			res.render('pool', {
 				_poolId: req.params.poolId,
-				poolName: poolName,
-				subjects: subjects
+				poolName: pool.name,
+				subjects: subjects,
+				query: q,
+				statusPaths: statusPaths
 			});
 		});
 	});

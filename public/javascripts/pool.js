@@ -10,52 +10,27 @@ function error() {
 	window.alert(errStr);
 }
 
-// Subject status paths
-var statusPaths = {
-	'NE': {
-		sort: 1,
-		text: 'New',
-		next: ['R']
-	},
-	'R': {
-		sort: 5,
-		text: 'Received',
-		next: ['PA']
-	},
-	'PA': {
-		sort: 10,
-		text: 'Pending Assessment',
-		next: ['RP', 'RC', 'RI', 'F']
-	},
-	'RP': {
-		sort: 50,
-		text: 'Resubmit - Plag.',
-		next: ['R']
-	},
-	'RC': {
-		sort: 50,
-		text: 'Resubmit - Cheating',
-		next: ['R']
-	},
-	'RI': {
-		sort: 50,
-		text: 'Resubmit - Inadequate',
-		next: ['R']
-	},
-	'F': {
-		sort: 100,
-		text: 'Fulfilled',
-		next: ['NO']
-	},
-	'NO': {
-		sort: 200,
-		text: 'Notified',
-		next: null
-	}
-};
 
-$(document).ready(function () {
 
+var statusPaths;
+
+$.when(
+	$.getJSON('/statusPaths'))
+.then(function (v1) {
+	statusPaths = v1;
+
+	$(document).ready(function () {
+		populateStatusSelects();
+		bindFileOperations();
+		initTableSorter();
+		initResizableColumns();
+		bindFiltersMenuToggle();
+	});
+});
+
+
+
+function populateStatusSelects() {
 	/* populate status select options */
 	$.fn.populateStatusSelect = function () {
 		
@@ -80,12 +55,12 @@ $(document).ready(function () {
 		return this;
 	};
 
-	var $statusSelects = $('select[name="status"]');
+	var $statusSelects = $('table select[name="status"]');
 	$statusSelects.each(function () {
 		$(this).populateStatusSelect();
 	});
-	$statusSelects.on('change', function (e) {
 
+	$statusSelects.on('change', function (e) {
 		var $this = $(this);
 
 		$this.populateStatusSelect();
@@ -95,21 +70,19 @@ $(document).ready(function () {
 		var status = $this.children(':selected').val();
 		$.post(url, { status: status })
 		.fail(function (jqXHR, textStatus, err) {
-
 			error(err);
 		});
 
 	});
+}
 
-	/* file upload operations */
+function bindFileOperations() {
 	$('a.file-import-link').on('click', function (e) {
-
 		e.preventDefault();
 		$(this).closest('td').find('input').click();
 	});
 
 	$('input[name="doc file input"]').on('change', function (e) {
-
 		var $this = $(this);
 
 		if ($this.val() == '') {
@@ -139,7 +112,6 @@ $(document).ready(function () {
 			contentType: false
 		})
 		.done(function (data, textStatus, jqXHR) {
-
 			$this.parent().siblings('.file-view-reimport').show();
 
 			// update status to 'Received'
@@ -150,47 +122,67 @@ $(document).ready(function () {
 			$tooltip.attr('title', data.originalName);
 		})
 		.fail(function (jqXHR, textStatus, err) {
-			
 			error(err);
 
 			$this.parent().siblings('.file-import').show();
 		})
 		.always(function () {
-
 			$this.parent().siblings('.file-uploading').hide();
 			$td.removeClass('info');
 		});
 	});
+}
 
-	
+function initTableSorter() {
+	var $subjectTable = $('table#subjectTable');
 
-	$subjectTable = $('table#subjectTable');
+	if ($subjectTable.find('tbody tr').length > 0) {
+		$subjectTable.tablesorter({
+			sortList: [
+				[3, 0], // Instructor
+				[0, 0] // Name
+			],
+			headers: {
+				2: { sorter: false }, // E-Mail
+				6: { sorter: false }, // File
+				9: { sorter: false } // [delete]
+			},
+			textExtraction: function (node) {
+				var $node = $(node);
 
-	$subjectTable.tablesorter({
-		sortList: [
-			[3, 0], // Name
-			[0, 0] // Instructor
-		],
-		headers: {
-			2: { sorter: false }, // E-Mail
-			6: { sorter: false }, // File
-			9: { sorter: false } // [delete]
-		},
-		textExtraction: function (node) {
-			var $node = $(node);
-
-			if ($node.find('select[name="Status"]').length == 1) {
-				var val = $node.find('option').filter(':selected').val();
-				return statusPaths[val].sort;
+				if ($node.find('select[name="Status"]').length == 1) {
+					var val = $node.find('option').filter(':selected').val();
+					return statusPaths[val].sort;
+				}
+				else
+					return $node.text();
 			}
-			else
-				return $node.text();
-		}
-	});
+		});
+	}
+}
 
-
-
+function initResizableColumns() {
+	var $subjectTable = $('table#subjectTable');
 	$subjectTable.resizableColumns();
+}
 
-	/* */
-});
+function bindFiltersMenuToggle() {
+	var $filtersMenuToggle = $('a#filtersMenuToggle');
+	var $filtersMenu = $('div#filtersMenu');
+	$filtersMenuToggle.on('click', function (e) {
+
+		e.preventDefault();
+		var $this = $(this);
+		var html = $this.html();
+		if (html.indexOf('-') != -1) {
+			// is open
+			$this.html(html.replace(/-/, '+'));
+			$filtersMenu.slideUp();
+		}
+		else {
+			$this.html(html.replace(/\+/, '-'));
+			$filtersMenu.slideDown();
+		}
+
+	});
+}
