@@ -2,32 +2,32 @@ module.exports = {
 	'NE': {
 		sort: 1,
 		text: 'New',
-		next: ['R']
+		next: ['R', 'EX']
 	},
 	'R': {
 		sort: 5,
 		text: 'Received',
-		next: ['PA']
+		next: ['PA', 'EX']
 	},
 	'PA': {
 		sort: 10,
 		text: 'Pending Assessment',
-		next: ['RP', 'RC', 'RI', 'F']
+		next: ['RP', 'RC', 'RI', 'F', 'EX']
 	},
 	'RP': {
 		sort: 50,
 		text: 'Resubmit - Plag.',
-		next: ['R']
+		next: ['R', 'EX']
 	},
 	'RC': {
 		sort: 50,
 		text: 'Resubmit - Cheating',
-		next: ['R']
+		next: ['R', 'EX']
 	},
 	'RI': {
 		sort: 50,
 		text: 'Resubmit - Inadequate',
-		next: ['R']
+		next: ['R', 'EX']
 	},
 	'F': {
 		sort: 100,
@@ -37,6 +37,11 @@ module.exports = {
 	'NO': {
 		sort: 200,
 		text: 'Notified',
+		next: null
+	},
+	'EX': {
+		sort: 300,
+		text: 'Excused',
 		next: null
 	}
 };
