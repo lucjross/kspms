@@ -46,10 +46,13 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 				conditions['isRemoved'] = q.showRemoved = false;
 			}
 			else q.showRemoved = true;
+
+			console.log('q=', q);
 		}
 		
 		Subject.find(conditions, function (err, subjects) {
 
+			console.log('subjects=', subjects);
 			res.render('pool', {
 				_poolId: req.params.poolId,
 				poolName: pool.name,

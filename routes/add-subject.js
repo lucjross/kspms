@@ -44,10 +44,7 @@ router.post('/pool/:poolId/add-subject', auth.isAuthenticated, function (req, re
 			firstName: b.instructor_firstName
 		},
 		courseId: b.courseId,
-		uniqueId: b.uniqueId,
-		status: 'NE',
-		comments: '',
-		isRemoved: false
+		uniqueId: b.uniqueId
 	};
 
 	req.app.set('cache-last-subject', subjectData);

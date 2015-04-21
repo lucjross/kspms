@@ -25,10 +25,22 @@ var subjectSchema = m.Schema({
 		extension: String,
 		html: String
 	},
-	status: String,
-	creditsEarned: Number,
-	comments: String,
-	isRemoved: Boolean
+	status: {
+		type: String,
+		default: 'NE'
+	},
+	creditsEarned: {
+		type: Number,
+		default: 0
+	},
+	comments: {
+		type: String,
+		default: ''
+	},
+	isRemoved: {
+		type: Boolean,
+		default: false
+	}
 }, { autoIndex: false });
 exports.Subject = m.model('Subject', subjectSchema);
 
@@ -49,7 +61,14 @@ var userSchema = m.Schema({
 		familyName: String,
 		givenName: String
 	},
-	emails: []
+	emails: [
+		m.Schema({
+			value: {
+				type: String,
+				lowercase: true
+			}
+		})
+	]
 }, { autoIndex: false });
 var options = auth.errors || {};
 userSchema.plugin(passportLocalMongoose, options);

@@ -101,8 +101,11 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 						},
 						courseId: subjectCourseId,
 						uniqueId: subjectUniqueId,
+						// Schema defaults don't apply so making them explicit here
 						status: 'NE',
-						comments: ''
+						creditsEarned: 0,
+						comments: '',
+						isRemoved: false
 					});
 				});
 
@@ -110,6 +113,7 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 
 					if (err) {
 						res.status(500).send({ err: err, message: 'mongoose.collection#insert error' });
+						return;
 					}
 
 					res.redirect('/pool/' + _poolId);
@@ -121,9 +125,10 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 				if (err) {
 					res.status(500).send({ err: err, message: 'fs#readFile error' });
 				}
-
-				parser.write(data);
-				parser.end();
+				else {
+					parser.write(data);
+					parser.end();
+				}
 
 				_unlink(path);
 			});
