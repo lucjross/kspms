@@ -38,6 +38,14 @@ block content
                         each val, key in statusPaths
                             option(value='#{key}' selected=(query.status === key))
                                 | #{val.text}
+                fieldset
+                    label Show Removed
+                    input(type='radio' name='showRemoved'
+                            checked=!!query.showRemoved value='true')/
+                    | Yes
+                    input(style='margin-left: 50px;' type='radio' name='showRemoved'
+                            checked=!query.showRemoved value='false')/
+                    | No
                 button(type='submit') Update
 
     div.row: div.content
@@ -80,10 +88,12 @@ block content
                 th(data-resizable-column-id='pool__Credits_Earned')
                     | Credits Earned
                 th(data-resizable-column-id='pool__')
-          tbody
+          tbody(data-show-removed=query.showRemoved)
             each s, i in subjects
 
-                tr
+              if (! s.isRemoved) || query.showRemoved
+                
+                tr(class=(s.isRemoved ? 'removed' : '') data-removed=s.isRemoved)
                     td.cutoff
                         a.comment-link(href='#' title='Edit Comments')
                             strong + 
@@ -126,9 +136,13 @@ block content
                                 option(value='#{s.status}' selected) [#{s.status}]
                     td.text-right #{s.creditsEarned}
                     td.text-center
-                        a.remove-link(href='/subject/#{s._id}/remove' title='Remove Subject'
+                        a.remove-link(style=(s.isRemoved ? 'display: none' : '')
+                                href='/subject/#{s._id}/remove' title='Remove Subject'
                                 data-subject='#{s.lastName}, #{s.firstName}')
                             strong x
+                        a.unremove-link(style=(s.isRemoved ? '' : 'display: none')
+                                href='/subject/#{s._id}/unremove' title='Un-Remove Subject')
+                            strong +
 
     div.row: div.content
         div.c2
@@ -140,7 +154,4 @@ block content
                 a.list-import-link(href='/pool/#{_poolId}/import-subjects')
                     strong + 
                     | Import subject list
-                //- form(action='/pool/#{_poolId}/import-subjects' method='POST'
-                //-         enctype='multipart/form-data' style='display: none')
-                //-     input(type='file' name='list file input' id='listFileInput' style='display: none')
 

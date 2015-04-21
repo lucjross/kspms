@@ -67,9 +67,9 @@ a.remove-link {
   color: #f00; }
   a.remove-link:hover {
     color: #833; }
-a.comment-link {
+a.comment-link, a.unremove-link {
   color: #0b0; }
-  a.comment-link:hover {
+  a.comment-link:hover, a.unremove-link:hover {
     color: #383; }
 
 .tooltip:hover:after {
@@ -118,5 +118,9 @@ div.comment-popover {
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 10px; }
+
+.removed {
+  opacity: 0.5;
+  text-decoration: line-through; }
 
 /*# sourceMappingURL=style.css.map */

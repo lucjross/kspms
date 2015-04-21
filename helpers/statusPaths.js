@@ -37,11 +37,11 @@ module.exports = {
 	'NO': {
 		sort: 200,
 		text: 'Notified',
-		next: null
+		next: ['NE']
 	},
 	'EX': {
 		sort: 300,
 		text: 'Excused',
-		next: null
+		next: ['NE']
 	}
 };

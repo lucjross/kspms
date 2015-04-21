@@ -25,7 +25,8 @@ $.when(
 		initTableSorter();
 		initResizableColumns();
 		bindFiltersMenuToggle();
-		bindRemoveConfirm();
+		bindRemove();
+		bindUnremove();
 		bindEditComments();
 	});
 });
@@ -201,15 +202,50 @@ function bindFiltersMenuToggle() {
 	});
 }
 
-function bindRemoveConfirm() {
+function bindRemove() {
 	$('a.remove-link').on('click', function(e) {
 		e.preventDefault();
 		var $this = $(this);
 		var name = $this.attr('data-subject');
 		var ok = window.confirm('Are you sure you want to remove subject ' + name + ', from the pool?');
 		if (ok) {
-			window.location.href = $this.attr('href');
+			// background post to remove
+
+			var url = $this.attr('href');
+			$.post(url)
+			.done(function () {
+				var showRemoved = $this.closest('tbody').prop('data-show-removed');
+				if (! showRemoved) {
+					// just refresh and removed rows won't be included
+					window.location.href = window.location.href;
+				}
+				else {
+					$this.closest('tr').addClass('removed');
+				}
+			})
+			.fail(function (jqXHR, textStatus, err) {
+				error(err);
+			});
 		}
+	});
+}
+
+function bindUnremove() {
+	$('a.unremove-link').on('click', function (e) {
+		e.preventDefault();
+		var $this = $(this);
+		var url = $this.attr('href');
+
+		// background post to unremove
+		$.post(url)
+		.done(function () {
+			$this.hide();
+			$this.siblings('a.remove-link').show();
+			$this.closest('tr').removeClass('removed');
+		})
+		.fail(function (jqXHR, textStatus, err) {
+			error(err);
+		})
 	});
 }
 
@@ -244,8 +280,6 @@ function bindEditComments() {
 
 		// open
 		var $tr = $td.closest('tr');
-		var $lastTd = $tr.find('td').last();
-
 		$outerDiv.css({
 			'height': ($tr.height() + 1) + 'px',
 			'width': ($tr.outerWidth() - $td.outerWidth() + 1) + 'px',
@@ -267,10 +301,9 @@ function bindEditComments() {
 		var comments = $input.val();
 		$.post(url, { comments: comments })
 		.done(function () {
-			// update the saved value
+
 			$input.attr('data-saved-value', comments);
 			$this.closest('tr').find('a.comment-link').click(); // close comments box
-			
 		})
 		.fail(function (jqXHR, textStatus, err) {
 			error(err);

@@ -94,7 +94,7 @@ a {
 		}
 	}
 
-	&.comment-link {
+	&.comment-link, &.unremove-link {
 		color: #0b0;
 		&:hover {
 			color: #383;
@@ -159,3 +159,24 @@ div.comment-popover {
 	border: 1px solid #ccc;
 	padding: 10px;
 }
+
+.removed {
+	opacity: 0.5;
+	text-decoration: line-through;
+}
+
+// .dimmed {
+//   position: relative;
+// }
+
+// .dimmed:after {
+//   content: " ";
+//   z-index: 20;
+//   display: block;
+//   position: absolute;
+//   height: 100%;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   background: rgba(0, 0, 0, 0.5);
+// }

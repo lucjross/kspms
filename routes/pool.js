@@ -18,7 +18,9 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 
 	Pool.findById(_poolId, function (err, pool) {
 		
-		var conditions = { '_poolId': _poolId };
+		var conditions = {
+			'_poolId': _poolId
+		};
 		var q = req.query;
 		if (q !== {}) {
 			if (/^[a-z ,.'-]{1,50}$/i.test(q.instructorLastName)) {
@@ -39,6 +41,11 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 				conditions['status'] = q.status;
 			}
 			else delete q.status;
+
+			if (! /^true$/.test(q.showRemoved)) {
+				conditions['isRemoved'] = q.showRemoved = false;
+			}
+			else q.showRemoved = true;
 		}
 		
 		Subject.find(conditions, function (err, subjects) {
@@ -54,21 +61,44 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 	});
 });
 
-router.get('/subject/:subjectId/remove', auth.isAuthenticated, function (req, res) {
-	
-	var _subjectId = req.params.subjectId;
+router.post(/^\/subject\/([0-9a-z]+)\/(un)?remove$/, auth.isAuthenticated, function (req, res) {
 
-	Subject.findByIdAndRemove(_subjectId, function (err, subject) {
+	var _subjectId = req.params[0];
+	var remove = ! req.params[1]; // "un" isn't there
+	var update = {
+		isRemoved: remove
+	};
+	// Subject.findByIdAndUpdate({ _id: _subjectId }, update, function (err, subject) {
 
-		if (err) throw err;
+	// 	if (err) {
+	// 		console.error(req.path + ': err=', err);
+	// 		res.sendStatus(500);
+	// 		return;
+	// 	}
 
-		console.log('removed subject=', subject);
+	// 	var poolId = subject._poolId;
+	// 	res.redirect('/pool/' + _poolId);
+	// });
 
-		var _poolId = subject._poolId;
 
-		res.redirect('/pool/' + _poolId);
-	});
+	updateSubject(_subjectId, update, req, res);
 });
+
+// router.get('/subject/:subjectId/remove', auth.isAuthenticated, function (req, res) {
+	
+// 	var _subjectId = req.params.subjectId;
+
+// 	Subject.findByIdAndRemove(_subjectId, function (err, subject) {
+
+// 		if (err) throw err;
+
+// 		console.log('removed subject=', subject);
+
+// 		var _poolId = subject._poolId;
+
+// 		res.redirect('/pool/' + _poolId);
+// 	});
+// });
 
 /**
  * Convenience function to update a subject

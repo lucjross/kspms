@@ -27,7 +27,8 @@ var subjectSchema = m.Schema({
 	},
 	status: String,
 	creditsEarned: Number,
-	comments: String
+	comments: String,
+	isRemoved: Boolean
 }, { autoIndex: false });
 exports.Subject = m.model('Subject', subjectSchema);
 
