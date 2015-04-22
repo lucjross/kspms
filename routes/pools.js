@@ -5,7 +5,7 @@ var auth = require('../helpers/auth');
 var Pool = require('../models/models').Pool;
 var Subject = require('../models/models').Subject;
 
-router.get('/', auth.isAuthenticated, function (req, res) {
+router.get('/pools', auth.isAuthenticated, function (req, res) {
 	
 	Pool.find({ _userId: req.user._id }, function (err, pools) {
 
@@ -36,7 +36,7 @@ router.get('/pool/:poolId/remove', auth.isAuthenticated, function (req, res) {
 		if (err) throw err;
 
 		console.log(req.path + ': removed pool=', pool);
-		res.redirect('/');
+		res.redirect('/pools');
 	});
 });
 

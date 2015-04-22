@@ -57,15 +57,6 @@ mongoose.connection.on('disconnected', connect);
 
 
 
-var route_pools = require('./routes/pools');
-var route_add_pool = require('./routes/add-pool');
-var route_pool = require('./routes/pool');
-var route_add_subject = require('./routes/add-subject');
-var route_import_subjects = require('./routes/import-subjects');
-var route_login = require('./routes/login');
-var route_new_user = require('./routes/new-user');
-var route_logout = require('./routes/logout');
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -97,16 +88,14 @@ app.use(function (req, res, next) {
 //     express.static(path.join(__dirname, 'public'))
 // );
 
-app.use('/', [
-    route_pools,
-    route_add_pool,
-    route_pool,
-    route_add_subject,
-    route_import_subjects,
-    route_login,
-    route_logout,
-    route_new_user
-]);
+var routeModuleNames = [
+        'pools', 'add-pool', 'pool', 'add-subject',
+        'import-subjects', 'login', 'new-user', 'logout', 
+        'home'];
+var routeModules = routeModuleNames.map(function (name) {
+    return require('./routes/' + name);
+});
+app.use('/', routeModules);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
