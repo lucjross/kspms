@@ -1,0 +1,41 @@
+extends layout
+
+block scripts
+	script.
+
+		$(document).ready(function () {
+			$('input').first().focus();
+		});
+
+block content
+	div.row
+		ul.breadcrumb
+			li
+				a(href='/') Home 
+				span.divider /
+			li
+				a(href='/sections') Sections 
+				span.divider /
+			li Add Section
+			
+			include _loginMsg.jade
+
+	div.content
+		div.c6.space-top: form.hform(action='/add-section' method='POST')
+			fieldset
+				label Unique
+				input(type='text' name='uniqueId' placeholder='<Number>')
+
+			fieldset
+				label Instructor Last Name
+				input(type='text' name='instructor_lastName' placeholder='<String>')
+
+			fieldset
+				label Instructor First Name
+				input(type='text' name='instructor_firstName' placeholder='<String>')
+
+			fieldset
+				label Course
+				input(type='text' name='courseId' placeholder='<Number>')
+
+			button(type='submit') Add

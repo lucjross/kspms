@@ -9,20 +9,30 @@ var auth = require('../helpers/auth');
 
 var Pool = require('../models/models').Pool;
 var Subject = require('../models/models').Subject;
+var Section = require('../models/models').Section;
 
 router.get('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req, res) {
 
 	var _poolId = req.params.poolId;
 
-	Pool.findById(_poolId, function (err, pool) {
+	Pool.findById(_poolId, function (poolErr, pool) {
 
-		if (err) throw err;
+		if (poolErr) throw poolErr;
 
-		var poolName = pool.name;
+		Section.find({
+			_userId: req.user._id
+			/* , isActive... */
+		}, function (sectionErr, sections) {
 
-		res.render('import-subjects', {
-			_poolId: _poolId,
-			poolName: poolName
+			sections.sort(function (a, b) {
+				return a.uniqueId > b.uniqueId;
+			});
+
+			res.render('import-subjects', {
+				_poolId: _poolId,
+				poolName: pool.name,
+				sections: sections
+			});
 		});
 	});
 });

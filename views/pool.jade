@@ -7,12 +7,18 @@ block content
     div.row
         ul.breadcrumb
             li
-                a(href='/') Pools 
+                a(href='/') Home 
+                span.divider /
+            li
+                a(href='/pools') Pools 
                 span.divider /
             li #{poolName} 
 
             include _loginMsg.jade
 
+    //-
+    //- Filters
+    //-
     div.row: div.content
         div.c2
             p
@@ -48,6 +54,9 @@ block content
                     | No
                 button(type='submit') Update
 
+    //-
+    //- Table
+    //-
     div.row: div.content
         table#subjectTable.tablesorter(data-resizable-columns-id='pool')
           thead
@@ -146,7 +155,7 @@ block content
 
     div.row: div.content
         div.c2
-            p
+            p.space-top
                 a(href='/pool/#{_poolId}/add-subject')
                     strong + 
                     | Add subject

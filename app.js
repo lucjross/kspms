@@ -65,7 +65,9 @@ app.set('view engine', 'jade');
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: 1000 * 60 * 60 // cache for an hour
@@ -93,7 +95,7 @@ app.use(function (req, res, next) {
 var routeModuleNames = [
         'pools', 'add-pool', 'pool', 'add-subject',
         'import-subjects', 'login', 'new-user', 'logout', 
-        'home'];
+        'home', 'sections', 'add-section'];
 var routeModules = routeModuleNames.map(function (name) {
     return require('./routes/' + name);
 });

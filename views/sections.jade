@@ -1,0 +1,29 @@
+extends layout
+
+block content
+	div.row
+		ul.breadcrumb
+			li
+				a(href='/') Home 
+				span.divider /
+			li Sections
+			
+			include _loginMsg.jade
+	div.content.space-top: div.c8.centered
+		table
+			tr
+				th Unique
+				th Instructor Name
+				th Course
+				th
+			each s, i in sections
+				tr
+					td.text-right #{s.uniqueId}
+					td #{s.instructor.lastName}, #{s.instructor.firstName}
+					td #{s.courseId}
+					td.text-center
+						a.remove-link(href='/section/#{s._id}/remove') x
+
+		p.space-top: a(href='/add-section')
+			strong + 
+			| Add Section

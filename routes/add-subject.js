@@ -3,28 +3,30 @@ var router = express.Router();
 var auth = require('../helpers/auth');
 var Pool = require('../models/models').Pool;
 var Subject = require('../models/models').Subject;
+var Section = require('../models/models').Section;
 
 router.get('/pool/:poolId/add-subject', auth.isAuthenticated, function (req, res) {
 
 	var _poolId = req.params.poolId;
 
-	Pool.findById(_poolId, function (err, pool) {
+	Pool.findById(_poolId, function (poolErr, pool) {
 
-		var poolName = pool.name;
-		
-		var cached = req.app.get('cache-last-subject');
-		if (! cached) {
-			cached = {};
-			cached.instructor = {};
-		}
+		Section.find({
+			_userId: req.user._id
+			/* , isActive... */
+		}, function (sectionErr, sections) {
 
-		res.render('add-subject', {
-			_poolId: _poolId,
-			poolName: poolName,
-			lastInstructor_lastName: cached.instructor.lastName || '',
-			lastInstructor_firstName: cached.instructor.firstName || '',
-			lastCourseId: cached.courseId || '',
-			lastUniqueId: cached.uniqueId || ''
+			sections.sort(function (a, b) {
+				return a.uniqueId > b.uniqueId;
+			});
+
+			console.log('sections=', sections);
+
+			res.render('add-subject', {
+				_poolId: _poolId,
+				poolName: pool.name,
+				sections: sections
+			});
 		});
 	});
 });
@@ -39,15 +41,15 @@ router.post('/pool/:poolId/add-subject', auth.isAuthenticated, function (req, re
 		firstName: b.firstName,
 		utId: b.utId,
 		email: b.email,
-		instructor: {
-			lastName: b.instructor_lastName,
-			firstName: b.instructor_firstName
-		},
-		courseId: b.courseId,
-		uniqueId: b.uniqueId
+		_sectionOId: b.sectionOId,
+		// instructor: {
+		// 	lastName: b.instructor_lastName,
+		// 	firstName: b.instructor_firstName
+		// },
+		// courseId: b.courseId,
+		// uniqueId: b.uniqueId
+		creditsEarned: b.creditsEarned
 	};
-
-	req.app.set('cache-last-subject', subjectData);
 
 	Subject.create(subjectData, function (err, subject) {
 

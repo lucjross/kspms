@@ -6,6 +6,7 @@ var mammoth = require('mammoth');
 var auth = require('../helpers/auth');
 var Subject = require('../models/models').Subject;
 var Pool = require('../models/models').Pool;
+var Section = require('../models/models').Section;
 var statusPaths = require('../helpers/statusPaths');
 
 router.get('/statusPaths', function (req, res) {
@@ -18,49 +19,64 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 
 	Pool.findById(_poolId, function (err, pool) {
 		
-		var conditions = {
+		var subjectConditions = {
 			'_poolId': _poolId
 		};
+		var sectionConditions = {};
 		var q = req.query;
 		if (q !== {}) {
 			if (/^[a-z ,.'-]{1,50}$/i.test(q.instructorLastName)) {
 				// contains
-				conditions['instructor.lastName'] = new RegExp(q.instructorLastName, 'gi');
+				sectionConditions['instructor.lastName'] = new RegExp(q.instructorLastName, 'gi');
 			}
 			else delete q.instructorLastName;
 
 			if (/^\d{1,10}$/.test(q.unique)) {
 				// equals
 				var unique = parseInt(q.unique, 10);
-				conditions['uniqueId'] = unique;
+				sectionConditions['uniqueId'] = unique;
 			}
 			else delete q.unique;
 
 			if (/^[A-Z]{1,2}$/.test(q.status)) {
 				// equals
-				conditions['status'] = q.status;
+				subjectConditions['status'] = q.status;
 			}
 			else delete q.status;
 
 			if (! /^true$/.test(q.showRemoved)) {
-				conditions['isRemoved'] = q.showRemoved = false;
+				subjectConditions['isRemoved'] = q.showRemoved = false;
 			}
 			else q.showRemoved = true;
-
-			console.log('q=', q);
 		}
-		
-		Subject.find(conditions, function (err, subjects) {
 
-			console.log('subjects=', subjects);
-			res.render('pool', {
-				_poolId: req.params.poolId,
-				poolName: pool.name,
-				subjects: subjects,
-				query: q,
-				statusPaths: statusPaths
+		var subjectFind = function () {
+			Subject.find(subjectConditions, function (err, subjects) {
+
+				res.render('pool', {
+					_poolId: req.params.poolId,
+					poolName: pool.name,
+					subjects: subjects,
+					query: q,
+					statusPaths: statusPaths
+				});
 			});
-		});
+		};
+
+		if (sectionConditions !== {}) {
+			Section.find(sectionConditions, function (err, sections) {
+
+				var sectionOIds = sections.map(function (section) {
+					return section._id;
+				});
+
+				subjectConditions['_sectionOId'] = { $in: sectionOIds };
+				subjectFind();
+			});
+		}
+		else {
+			subjectFind();
+		}
 	});
 });
 

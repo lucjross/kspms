@@ -11,14 +11,18 @@ block content
 	div.row
 		ul.breadcrumb
 			li
-				a(href='/') Pools 
+				a(href='/') Home 
+				span.divider /
+			li
+				a(href='/pools') Pools 
 				span.divider /
 			li Add Pool
 			
 			include _loginMsg.jade
 	div.content
-		div.c6: form.hform(action='/add-pool' method='POST')
-			label Name
-			input(type='text' name='name' placeholder='<semester> <year>')
+		div.c6.space-top: form.hform(action='/add-pool' method='POST')
+			fieldset
+				label Name
+				input(type='text' name='name' placeholder='<semester> <year>')
 
 			button(type='submit') Add

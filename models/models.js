@@ -14,6 +14,7 @@ var subjectSchema = m.Schema({
 	firstName: String,
 	utId: String,
 	email: String,
+	_sectionOId: m.Schema.Types.ObjectId,
 	instructor: {
 		lastName: String,
 		firstName: String
@@ -43,6 +44,25 @@ var subjectSchema = m.Schema({
 	}
 }, { autoIndex: false });
 exports.Subject = m.model('Subject', subjectSchema);
+
+// Section
+var sectionSchema = m.Schema({
+	_userId: {
+		type: m.Schema.Types.ObjectId,
+		index: true
+	},
+	instructor: {
+		lastName: String,
+		firstName: String
+	},
+	courseId: String,
+	uniqueId: {
+		type: Number,
+		unique: true,
+		required: true
+	}
+}, { autoIndex: false });
+exports.Section = m.model('Section', sectionSchema);
 
 // Pool
 var poolSchema = m.Schema({

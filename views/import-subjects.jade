@@ -26,7 +26,10 @@ block content
 	div.row
 		ul.breadcrumb
 			li
-				a(href='/') Pools 
+				a(href='/') Home 
+				span.divider /
+			li
+				a(href='/pools') Pools 
 				span.divider /
 			li
 				a(href='/pool/#{_poolId}') #{poolName} 
@@ -35,17 +38,34 @@ block content
 
 			include _loginMsg.jade
 	div.content
-		div.c6: form.hform(
+		div.c6.space-top: form.hform(
 				action='/pool/#{_poolId}/import-subjects'
 				method='POST'
 				enctype='multipart/form-data')
-			label Instructor Last Name
-			input(type='text' name='instructor_lastName')
+			fieldset
+				label Instructor Last Name
+				input(type='text' name='instructor_lastName')
 
-			label Instructor First Name
-			input(type='text' name='instructor_firstName')
+			fieldset
+				label Instructor First Name
+				input(type='text' name='instructor_firstName')
 
-			label File (CSV)
-			input(type='file' name='file' accept='.csv')
+			fieldset
+				label File (CSV)
+				input(type='file' name='file' accept='.csv')
 
 			button(type='submit' disabled) Add
+
+		div.c3.space-top
+			h6: i
+				| Please note:
+			p: i
+				| If the imported data specifies a unique ID 
+				| that does not match a Section in the 
+				a(href='/sections') Sections 
+				| list,
+				| a new Section will be created with the course name specified 
+				| in the data and the given instructor name.
+			p: i
+				| Otherwise, the Section with a matching unique ID will be used.
+

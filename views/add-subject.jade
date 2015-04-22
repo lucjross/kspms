@@ -11,7 +11,10 @@ block content
 	div.row
 		ul.breadcrumb
 			li
-				a(href='/') Pools 
+				a(href='/') Home 
+				span.divider /
+			li
+				a(href='/pools') Pools 
 				span.divider /
 			li
 				a(href='/pool/#{_poolId}') #{poolName} 
@@ -20,32 +23,33 @@ block content
 
 			include _loginMsg.jade
 	div.content
-		div.c6: form.hform(action='/pool/#{_poolId}/add-subject' method='POST')
-			label Last Name
-			input(type='text' name='lastName')
+		div.c6.space-top: form.hform(action='/pool/#{_poolId}/add-subject' method='POST')
+			fieldset
+				label Last Name
+				input(type='text' name='lastName')
 
-			label First Name
-			input(type='text' name='firstName')
+			fieldset
+				label First Name
+				input(type='text' name='firstName')
 
-			label ID
-			input(type='text' name='utId')
+			fieldset
+				label ID
+				input(type='text' name='utId')
 
-			label E-Mail
-			input(type='text' name='email')
+			fieldset
+				label E-Mail
+				input(type='text' name='email')
 
-			label Instructor Last Name
-			input(type='text' name='instructor_lastName' value='#{lastInstructor_lastName}')
+			fieldset
+				label Credits Earned
+				input(type='text' name='creditsEarned' value='0')
 
-			label Instructor First Name
-			input(type='text' name='instructor_firstName' value='#{lastInstructor_firstName}')
-
-			label Course ID
-			input(type='text' name='courseId' value='#{lastCourseId}')
-
-			label Unique ID
-			input(type='text' name='uniqueId' value='#{lastUniqueId}')
-
-			label Credits Earned
-			input(type='text' name='creditsEarned' value='0')
+			fieldset
+				label Section
+				select(name='sectionOId')
+					each s, i in sections
+						option(value=s._id)
+							| #{s.uniqueId}
+							| (#{s.instructor.lastName}, #{s.instructor.firstName} / #{s.courseId})
 
 			button(type='submit') Add
