@@ -49,7 +49,7 @@ block content
 				select(name='sectionOId')
 					each s, i in sections
 						option(value=s._id)
-							| #{s.uniqueId}
+							| #{s.uniqueID}
 							| (#{s.instructor.lastName}, #{s.instructor.firstName} / #{s.course})
 
 			button(type='submit') Add

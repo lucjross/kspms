@@ -24,15 +24,15 @@ block content
 	div.content.space-top: div.c8.centered
 		table
 			tr
-				th Unique
+				th Unique ID
 				th Instructor Name
 				th Course
 				th
 			each s, i in sections
 				tr
-					td.text-right #{s.uniqueId}
+					td.text-right #{s.uniqueID}
 					td #{s.instructor.lastName}, #{s.instructor.firstName}
-					td #{s.courseId}
+					td #{s.course}
 					td.text-center
 						a.remove-link(href='/section/#{s._id}/remove') x
 

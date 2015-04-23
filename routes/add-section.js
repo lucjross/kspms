@@ -12,7 +12,7 @@ router.post('/add-section', auth.isAuthenticated, function (req, res) {
 
 	var sectionData = {
 		_userId: req.user._id,
-		uniqueId: req.body.uniqueId,
+		uniqueID: req.body.uniqueID,
 		instructor: {
 			lastName: req.body.instructor_lastName,
 			firstName: req.body.instructor_firstName

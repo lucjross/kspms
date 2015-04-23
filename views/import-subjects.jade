@@ -38,9 +38,13 @@ block content
 
 			include _loginMsg.jade
 	div.content
+		if csvNope
+			div.space-top: div.alert.danger
+				| Parse failed with error, "#{csvNope}." 
+				| Please revise and resubmit.
+
 		if (existingSection || partialSection)
-			div.space-top
-				div.alert
+			div.space-top: div.alert
 					if existingSection
 						| An existing Section was identified from the imported data. Please review. Sugar peas!
 					else
@@ -55,8 +59,8 @@ block content
 
 				if (existingSection || partialSection)
 					fieldset
-						label Unique Id
-						p= existingSection ? existingSection.uniqueId : partialSection.uniqueId
+						label Unique ID
+						p= existingSection ? existingSection.uniqueID : partialSection.uniqueID
 
 					fieldset
 						label Course
@@ -76,12 +80,14 @@ block content
 						else
 							input(type='text' name='instructor_firstName')
 
+					button(type='submit') Add Subjects
+
 				else
 					fieldset
 						label File (CSV)
 						input(type='file' name='file' accept='.csv')
 
-				button(type='submit')= partialSection || existingSection ? 'Add Subjects' : 'Parse'
+					button(type='submit' disabled) Parse
 
 		div.c3.space-top
 			h6: i

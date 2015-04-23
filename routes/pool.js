@@ -31,12 +31,12 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 			}
 			else delete q.instructorLastName;
 
-			if (/^\d{1,10}$/.test(q.unique)) {
+			if (/^\d{1,10}$/.test(q.uniqueID)) {
 				// equals
-				var unique = parseInt(q.unique, 10);
-				sectionConditions['uniqueId'] = unique;
+				var uniqueID = parseInt(q.uniqueID, 10);
+				sectionConditions['uniqueID'] = uniqueID;
 			}
-			else delete q.unique;
+			else delete q.uniqueID;
 
 			if (/^[A-Z]{1,2}$/.test(q.status)) {
 				// equals
@@ -108,22 +108,6 @@ router.post(/^\/subject\/([0-9a-z]+)\/(un)?remove$/, auth.isAuthenticated, funct
 
 	updateSubject(_subjectId, update, req, res);
 });
-
-// router.get('/subject/:subjectId/remove', auth.isAuthenticated, function (req, res) {
-	
-// 	var _subjectId = req.params.subjectId;
-
-// 	Subject.findByIdAndRemove(_subjectId, function (err, subject) {
-
-// 		if (err) throw err;
-
-// 		console.log('removed subject=', subject);
-
-// 		var _poolId = subject._poolId;
-
-// 		res.redirect('/pool/' + _poolId);
-// 	});
-// });
 
 /**
  * Convenience function to update a subject

@@ -8,6 +8,7 @@ var config = require('config');
 var multer = require('multer'); // for multipart form
 var passport = require('passport');
 var expressSession = require('express-session');
+var MongoStore = require('connect-mongo')(expressSession);
 var expressValidator = require('express-validator');
 var mongoose = require('mongoose');
 
@@ -15,19 +16,7 @@ var User = require('./models/models').User;
 
 var app = express();
 
-//
-// PASSPORT
-//
 
-app.use(expressSession({
-    secret: 'I <3 Kadie'
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 //
 // MONGOOSE
@@ -54,6 +43,25 @@ var connect = function () {
 connect();
 mongoose.connection.on('error', console.error);
 mongoose.connection.on('disconnected', connect);
+
+
+
+//
+// PASSPORT
+//
+
+app.use(expressSession({
+    secret: 'I <3 Kadie',
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    })
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 
@@ -134,19 +142,16 @@ app.use(function (err, req, res, next) {
 
 // for storing temp data on the session (requires express-session & passport)
 app.locals.getUserTemp = function (req, key) {
-    if (! (req.session.userTempStorage && req.session.userTempStorage[req.user._id])) {
-        return undefined;
+    if (req.session.userTempStorage) {
+        return req.session.userTempStorage[key];
     }
-    return req.session.userTempStorage[req.user._id][key];
+    return undefined;
 };
 app.locals.setUserTemp = function (req, key, val) {
     if (! req.session.userTempStorage) {
         req.session.userTempStorage = {};
     }
-    if (! req.session.userTempStorage[req.user._id]) {
-        req.session.userTempStorage[req.user._id] = {};
-    }
-    req.session.userTempStorage[req.user._id][key] = val;
+    req.session.userTempStorage[key] = val;
     return undefined;
 };
 

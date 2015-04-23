@@ -11,21 +11,44 @@ var Pool = require('../models/models').Pool;
 var Subject = require('../models/models').Subject;
 var Section = require('../models/models').Section;
 
+var rerender = function (req, res, csvErrMsg) {
+
+	var poolInfo = req.app.locals.getUserTemp(req, 'import-poolInfo');
+	res.render('import-subjects', {
+		_poolId: poolInfo._poolId,
+		poolName: poolInfo.poolName,
+		csvNope: csvErrMsg
+	});
+};
+
 router.get('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req, res) {
 
-	var _poolId = req.params.poolId;
+	var poolId = req.params.poolId;
 
-	Pool.findById(_poolId, 'name', function (poolErr, pool) {
+	Pool.findById(poolId, 'name', function (poolErr, pool) {
 
 		if (poolErr) throw poolErr;
 
-		res.render('import-subjects', {
-			_poolId: _poolId,
+		// i guess i can't make a 'poolInfo' var to share between this and the res#render call
+		// because res#render modifies the object
+		req.app.locals.setUserTemp(req, 'import-poolInfo', {
+			_poolId: poolId,
 			poolName: pool.name
 		});
+		console.log('get import-poolInfo = ', req.app.locals.getUserTemp(req, 'import-poolInfo'));
 
 		// temp import data shouldn't be needed at this point
-		req.app.locals.getUserTemp(req, 'mostRecentCSVParse', undefined);
+		req.app.locals.setUserTemp(req, 'mostRecentCSVParse', undefined);
+
+		// saving the session explicitly is a work-around due to an express-session bug
+		req.session.save(function (err) {
+			if (err) return next(err);
+
+			res.render('import-subjects', {
+				_poolId: poolId,
+				poolName: pool.name
+			});
+		});
 	});
 });
 
@@ -42,9 +65,7 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 		});
 	};
 
-	var mostRecentCSVParse = req.app.locals.getUserTemp(req, 'mostRecentCSVParse') // is set after parsing
-	console.log('req.files=', req.files);
-	console.log('mostRecentCSVParse=', mostRecentCSVParse);
+	var mostRecentCSVParse = req.app.locals.getUserTemp(req, 'mostRecentCSVParse'); // is set after parsing
 
 	if (typeof req.files === 'object' && typeof req.files.file === 'object') {
 		// is initial upload
@@ -71,22 +92,31 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 
 			parser.on('error', function (err) {
 				
-				res.status(500).send({ err: err, message: 'csv-parse error' });
+				rerender(req, res,
+						'failed to parse');
 			});
 
 			parser.on('finish', function () {
 
 				if (! output[0] || output[0].length != ROW_LENGTH) {
-					res.sendStatus(400);
+					rerender(req, res,
+							'incorrect row length');
 					return;
 				}
 
 				// the first row contains just the unique ID and course description, all within the first column
 				// var matches = output[0].match(/^(\d+)\s-\s(.+)/);
 				var sectionRow = output.shift();
-				var sectionRowMatches = sectionRow[0].match(/^(\d+)\s-\s(.+)/);
-				var uniqueId = parseInt(sectionRowMatches[1], 10);
+				var sectionRowMatches = sectionRow[0].match(/^(\d+)\s-\s(.+)/); // TODO: this might return something bad
+				var uniqueID = parseInt(sectionRowMatches[1], 10);
 				var course = sectionRowMatches[2];
+
+				if (! (uniqueID != NaN && uniqueID > 0 &&
+						typeof course === 'string' && course.length > 0)) {
+					rerender(req, res,
+							'header does not contain valid section info');
+					return;
+				}
 
 				// discard headers
 				output.shift();
@@ -95,57 +125,52 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 				output.pop();
 
 				// now see if the unique ID matches any existing Sections
-				// (have to get the pool again first since this is an operation on a pool)
-				Pool.findById(poolId, 'name', function (poolErr, pool) {
+				Section.findOne({
+					_userId: req.user._id,
+					uniqueID: uniqueID
+				}, function (sectionErr, section) {
 
-					if (poolErr) throw poolErr;
+					if (sectionErr) throw sectionErr;
 
-					Section.findOne({
-						_userId: req.user._id,
-						uniqueId: uniqueId
-					}, function (sectionErr, section) {
+					var poolInfo = req.app.locals.getUserTemp(req, 'import-poolInfo');
 
-						console.log('section=', section);
+					if (section == null || section.uniqueID !== uniqueID) {
+						// save CSV parser output to userTemp,
+						// then reload page with relevant prompts
 
-						if (sectionErr) throw sectionErr;
-
-						if (section == null || section.uniqueId !== uniqueId) {
-							// save CSV parser output to userTemp,
-							// then reload page with relevant prompts
-
-							var partialSection = {
-								uniqueId: uniqueId,
-								course: course
-							}
-							req.app.locals.setUserTemp(req, 'mostRecentCSVParse', {
-								cleanedOutput: output,
-								partialSection: partialSection
-							});
-
-							res.render('import-subjects', {
-								_poolId: poolId,
-								poolName: pool.name,
-								partialSection: partialSection
-							});
+						var partialSection = {
+							uniqueID: uniqueID,
+							course: course
 						}
-						else {
-							// Section exists, so ask user to confirm import
+						req.app.locals.setUserTemp(req, 'mostRecentCSVParse', {
+							cleanedOutput: output,
+							partialSection: partialSection
+						});
 
-							req.app.locals.setUserTemp(req, 'mostRecentCSVParse', {
-								cleanedOutput: output,
-								existingSection: section
-							});
+						res.render('import-subjects', {
+							_poolId: poolInfo._poolId,
+							poolName: poolInfo.poolName,
+							partialSection: partialSection
+						});
+					}
+					else {
+						// Section exists, so ask user to confirm import
 
-							res.render('import-subjects', {
-								_poolId: poolId,
-								poolName: pool.name,
-								existingSection: section
-							});
-						}
-					});
+						req.app.locals.setUserTemp(req, 'mostRecentCSVParse', {
+							cleanedOutput: output,
+							existingSection: section
+						});
+
+						res.render('import-subjects', {
+							_poolId: poolInfo._poolId,
+							poolName: poolInfo.poolName,
+							existingSection: section
+						});
+					}
 				});
 			});
 
+			// the above parser events are triggered here
 			fs.readFile(path, { encoding: 'utf-8' }, function (err, data) {
 
 				if (err) {
@@ -160,7 +185,8 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 			});
 		}
 		else {
-			res.sendStatus(415);
+			rerender(req, res,
+						'incorrect file format');
 			_unlink(path);
 		}
 	}
@@ -189,8 +215,6 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 				});
 			});
 
-			console.log('POJSO subjects=', subjects);
-
 			Subject.collection.insert(subjects, function (err) {
 
 				if (err) {
@@ -212,7 +236,7 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 
 			var sectionData = {
 				_userId: req.user._id,
-				uniqueId: mostRecentCSVParse.partialSection.uniqueId,
+				uniqueID: mostRecentCSVParse.partialSection.uniqueID,
 				instructor: {
 					lastName: req.body.instructor_lastName,
 					firstName: req.body.instructor_firstName

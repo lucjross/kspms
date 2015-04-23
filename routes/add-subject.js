@@ -17,7 +17,7 @@ router.get('/pool/:poolId/add-subject', auth.isAuthenticated, function (req, res
 		}, function (sectionErr, sections) {
 
 			sections.sort(function (a, b) {
-				return a.uniqueId > b.uniqueId;
+				return a.uniqueID > b.uniqueID;
 			});
 
 			console.log('sections=', sections);
@@ -42,12 +42,6 @@ router.post('/pool/:poolId/add-subject', auth.isAuthenticated, function (req, re
 		utId: b.utId,
 		email: b.email,
 		_sectionOId: b.sectionOId,
-		// instructor: {
-		// 	lastName: b.instructor_lastName,
-		// 	firstName: b.instructor_firstName
-		// },
-		// courseId: b.courseId,
-		// uniqueId: b.uniqueId
 		creditsEarned: b.creditsEarned
 	};
 

@@ -19,7 +19,7 @@ block content
     //-
     //- Filters
     //-
-    div.row.space-top
+    div.row.content.space-top
         div.c2
             p: a(href='#filters' id='filtersMenuToggle')
                 strong - 
@@ -32,10 +32,10 @@ block content
                     input.pre(style='width: 169px' type='text' name='instructorLastName'
                             placeholder='<String>' value=(query.instructorLastName || ''))
                 fieldset
-                    label Unique
+                    label Unique ID
                     span.pre(style='width: 30px') =
-                    input.pre(style='width: 210px' type='text' name='unique'
-                            placeholder='<Number>' value=(query.unique || ''))
+                    input.pre(style='width: 210px' type='text' name='uniqueID'
+                            placeholder='<Number>' value=(query.uniqueID || ''))
                 fieldset
                     label Status
                     select(name='status' style='width: 240px')
@@ -80,9 +80,9 @@ block content
                     | ID
                 th(data-resizable-column-id='pool__E-Mail')
                     | E-Mail
-                th(data-resizable-column-id='pool__Unique')
-                    | Unique
-                    +filterText('=', query.unique, false)
+                th(data-resizable-column-id='pool__UniqueID')
+                    | Unique ID
+                    +filterText('=', query.uniqueID, false)
                 th(data-resizable-column-id='pool__Course')
                     | Course
                 th(data-resizable-column-id='pool__Instructor_Name')
@@ -122,7 +122,7 @@ block content
                                     button.small(type='submit') Save
                         | #{s.utId}
                     td.cutoff: a(href='mailto:#{s.email}')= s.email
-                    td.text-right.cutoff= section.uniqueId
+                    td.text-right.cutoff= section.uniqueID
                     td.text-left.cutoff(title=section.course)= section.course
                     - var instructor = section.instructor;
                     td.cutoff #{instructor.lastName}, #{instructor.firstName}

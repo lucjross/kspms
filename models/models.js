@@ -54,7 +54,7 @@ var sectionSchema = m.Schema({
 		firstName: String
 	},
 	course: String,
-	uniqueId: {
+	uniqueID: {
 		type: Number,
 		unique: true,
 		required: true
