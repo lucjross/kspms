@@ -17,7 +17,7 @@ router.post('/add-section', auth.isAuthenticated, function (req, res) {
 			lastName: req.body.instructor_lastName,
 			firstName: req.body.instructor_firstName
 		},
-		courseId: req.body.courseId
+		course: req.body.course
 	};
 	Section.create(sectionData, function (err, section) {
 

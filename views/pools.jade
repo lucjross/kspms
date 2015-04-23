@@ -20,7 +20,7 @@ block content
 					th
 				each pool, i in pools
 					tr
-						td: a(href='/pool/#{pool._id}') #{pool.name}
+						td: a(href='/pool/#{pool._id}')= pool.name
 						td.text-center
 							a.remove-link(href='/pool/#{pool._id}/remove') x
 

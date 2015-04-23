@@ -69,6 +69,7 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 							sectionsBySubjectOId[subject._id] = section;
 							return false;
 						}
+						return true;
 					});
 				});
 				
