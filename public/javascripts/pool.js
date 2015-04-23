@@ -12,12 +12,21 @@ function error() {
 
 
 
-var statusPaths;
+var statusPaths, statusPathsPromise;
+if (store && store.enabled) {
+	statusPaths = store.get('statusPaths');
+	if (! statusPaths) {
+		statusPathsPromise = $.getJSON('/statusPaths').done(function(obj) {
+			store.set('statusPaths', obj);
+		});
+	}
+}
+else statusPathsPromise = $.getJSON('/statusPaths');
 
 $.when(
-	$.getJSON('/statusPaths'))
+	statusPathsPromise)
 .then(function (v1) {
-	statusPaths = v1;
+	statusPaths = statusPaths || v1;
 
 	$(document).ready(function () {
 		populateStatusSelects();

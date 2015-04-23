@@ -19,7 +19,7 @@ block content
     //-
     //- Filters
     //-
-    div.content.space-top
+    div.row.space-top
         div.c2
             p: a(href='#filters' id='filtersMenuToggle')
                 strong - 
@@ -52,11 +52,12 @@ block content
                             checked=!query.showRemoved value='false')/
                     | No
                 button(type='submit') Update
+        div.c4
 
     //-
     //- Table
     //-
-    div.content
+    div.row.content
         table#subjectTable.tablesorter(data-resizable-columns-id='pool')
           thead
             tr
