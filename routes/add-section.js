@@ -24,7 +24,7 @@ router.post('/add-section', auth.isAuthenticated, function (req, res) {
 		if (err) throw err;
 
 		res.redirect('/sections');
-	})
+	});
 });
 
 module.exports = router;

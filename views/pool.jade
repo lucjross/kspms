@@ -19,12 +19,11 @@ block content
     //-
     //- Filters
     //-
-    div.row: div.content
+    div.content.space-top
         div.c2
-            p
-                a(href='#filters' id='filtersMenuToggle')
-                    strong - 
-                    | Filters
+            p: a(href='#filters' id='filtersMenuToggle')
+                strong - 
+                | Filters
         div#filtersMenu.c6
             form.hform(action='/pool/#{_poolId}' method='GET')
                 fieldset
@@ -57,7 +56,7 @@ block content
     //-
     //- Table
     //-
-    div.row: div.content
+    div.content
         table#subjectTable.tablesorter(data-resizable-columns-id='pool')
           thead
             tr
@@ -80,14 +79,14 @@ block content
                     | ID
                 th(data-resizable-column-id='pool__E-Mail')
                     | E-Mail
-                th(data-resizable-column-id='pool__Instructor_Name')
-                    | Instructor Name
-                    +filterText('contains', query.instructorLastName, true)
-                th(data-resizable-column-id='pool__Course')
-                    | Course
                 th(data-resizable-column-id='pool__Unique')
                     | Unique
                     +filterText('=', query.unique, false)
+                th(data-resizable-column-id='pool__Course')
+                    | Course
+                th(data-resizable-column-id='pool__Instructor_Name')
+                    | Instructor Name
+                    +filterText('contains', query.instructorLastName, true)
                 th(data-resizable-column-id='pool__File')
                     | File
                 th(data-resizable-column-id='pool__Status')
@@ -101,6 +100,8 @@ block content
             each s, i in subjects
 
               if (! s.isRemoved) || query.showRemoved
+
+                - var section = sectionsBySubjectOId[s._id] || {};
                 
                 tr(class=(s.isRemoved ? 'removed' : '') data-removed=s.isRemoved)
                     td.cutoff
@@ -119,10 +120,11 @@ block content
                                 div.c1
                                     button.small(type='submit') Save
                         | #{s.utId}
-                    td.cutoff: a(href='mailto:#{s.email}') #{s.email}
-                    td.cutoff #{s.instructor.lastName}, #{s.instructor.firstName}
-                    td.text-left.cutoff(title='#{s.courseId}') #{s.courseId}
-                    td.text-right.cutoff #{s.uniqueId}
+                    td.cutoff: a(href='mailto:#{s.email}')= s.email
+                    td.text-right.cutoff= section.uniqueId
+                    td.text-left.cutoff(title=section.course)= section.course
+                    - var instructor = section.instructor;
+                    td.cutoff #{instructor.lastName}, #{instructor.firstName}
                     td.text-center
                         span.file-view-reimport(style=s.file.originalName ? '' : 'display: none')
                             a.view-link.tooltip(
@@ -142,8 +144,8 @@ block content
                     td
                         form.vform(action='/subject/#{s._id}/update' method='POST' enctype='multipart/form-data')
                             select(name='status')
-                                option(value='#{s.status}' selected) [#{s.status}]
-                    td.text-right #{s.creditsEarned}
+                                option(value=s.status selected) [#{s.status}]
+                    td.text-right= s.creditsEarned
                     td.text-center
                         a.remove-link(style=(s.isRemoved ? 'display: none' : '')
                                 href='/subject/#{s._id}/remove' title='Remove Subject'

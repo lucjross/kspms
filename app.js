@@ -132,4 +132,24 @@ app.use(function (err, req, res, next) {
     });
 });
 
+// for storing temp data on the session (requires express-session & passport)
+app.locals.getUserTemp = function (req, key) {
+    if (! (req.session.userTempStorage && req.session.userTempStorage[req.user._id])) {
+        return undefined;
+    }
+    return req.session.userTempStorage[req.user._id][key];
+};
+app.locals.setUserTemp = function (req, key, val) {
+    if (! req.session.userTempStorage) {
+        req.session.userTempStorage = {};
+    }
+    if (! req.session.userTempStorage[req.user._id]) {
+        req.session.userTempStorage[req.user._id] = {};
+    }
+    req.session.userTempStorage[req.user._id][key] = val;
+    return undefined;
+};
+
+
+
 module.exports = app;

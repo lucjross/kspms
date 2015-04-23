@@ -8,19 +8,17 @@ var exports = {};
 var subjectSchema = m.Schema({
 	_poolId: {
 		type: m.Schema.Types.ObjectId,
+		required: true,
 		index: true
 	},
 	lastName: String,
 	firstName: String,
 	utId: String,
 	email: String,
-	_sectionOId: m.Schema.Types.ObjectId,
-	instructor: {
-		lastName: String,
-		firstName: String
+	_sectionOId: {
+		type: m.Schema.Types.ObjectId,
+		required: true
 	},
-	courseId: String,
-	uniqueId: Number,
 	file: {
 		originalName: String,
 		extension: String,
@@ -55,7 +53,7 @@ var sectionSchema = m.Schema({
 		lastName: String,
 		firstName: String
 	},
-	courseId: String,
+	course: String,
 	uniqueId: {
 		type: Number,
 		unique: true,

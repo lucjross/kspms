@@ -38,23 +38,50 @@ block content
 
 			include _loginMsg.jade
 	div.content
-		div.c6.space-top: form.hform(
-				action='/pool/#{_poolId}/import-subjects'
-				method='POST'
-				enctype='multipart/form-data')
-			fieldset
-				label Instructor Last Name
-				input(type='text' name='instructor_lastName')
+		if (existingSection || partialSection)
+			div.space-top
+				div.alert
+					if existingSection
+						| An existing Section was identified from the imported data. Please review. Sugar peas!
+					else
+						| A new Section has to be created from the imported data. 
+						| Please enter missing information and review.
 
-			fieldset
-				label Instructor First Name
-				input(type='text' name='instructor_firstName')
+		div.c6.space-top
+			form.hform(
+					action='/pool/#{_poolId}/import-subjects'
+					method='POST'
+					enctype='multipart/form-data')
 
-			fieldset
-				label File (CSV)
-				input(type='file' name='file' accept='.csv')
+				if (existingSection || partialSection)
+					fieldset
+						label Unique Id
+						p= existingSection ? existingSection.uniqueId : partialSection.uniqueId
 
-			button(type='submit' disabled) Add
+					fieldset
+						label Course
+						p= existingSection ? existingSection.course : partialSection.course
+
+					fieldset
+						label Instructor Last Name
+						if existingSection
+							p= existingSection.instructor.lastName
+						else
+							input(type='text' name='instructor_lastName')
+
+					fieldset
+						label Instructor First Name
+						if existingSection
+							p= existingSection.instructor.firstName
+						else
+							input(type='text' name='instructor_firstName')
+
+				else
+					fieldset
+						label File (CSV)
+						input(type='file' name='file' accept='.csv')
+
+				button(type='submit')= partialSection || existingSection ? 'Add Subjects' : 'Parse'
 
 		div.c3.space-top
 			h6: i
@@ -64,8 +91,7 @@ block content
 				| that does not match a Section in the 
 				a(href='/sections') Sections 
 				| list,
-				| a new Section will be created with the course name specified 
-				| in the data and the given instructor name.
+				| a new Section must be created.
 			p: i
 				| Otherwise, the Section with a matching unique ID will be used.
 

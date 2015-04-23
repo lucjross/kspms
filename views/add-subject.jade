@@ -50,6 +50,6 @@ block content
 					each s, i in sections
 						option(value=s._id)
 							| #{s.uniqueId}
-							| (#{s.instructor.lastName}, #{s.instructor.firstName} / #{s.courseId})
+							| (#{s.instructor.lastName}, #{s.instructor.firstName} / #{s.course})
 
 			button(type='submit') Add

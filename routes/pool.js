@@ -50,33 +50,38 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 			else q.showRemoved = true;
 		}
 
-		var subjectFind = function () {
+		Section.find(sectionConditions, function (err, sections) {
+
+			if (sectionConditions !== {}) {
+				var sectionOIds = sections.map(function (s) {
+					return s._id;
+				});
+
+				subjectConditions['_sectionOId'] = { $in: sectionOIds };
+			}
+
 			Subject.find(subjectConditions, function (err, subjects) {
 
+				var sectionsBySubjectOId = {};
+				subjects.forEach(function (subject) {
+					sections.every(function (section) {
+						if (section._id.equals(subject._sectionOId)) {
+							sectionsBySubjectOId[subject._id] = section;
+							return false;
+						}
+					});
+				});
+				
 				res.render('pool', {
 					_poolId: req.params.poolId,
 					poolName: pool.name,
 					subjects: subjects,
+					sectionsBySubjectOId: sectionsBySubjectOId,
 					query: q,
 					statusPaths: statusPaths
 				});
 			});
-		};
-
-		if (sectionConditions !== {}) {
-			Section.find(sectionConditions, function (err, sections) {
-
-				var sectionOIds = sections.map(function (section) {
-					return section._id;
-				});
-
-				subjectConditions['_sectionOId'] = { $in: sectionOIds };
-				subjectFind();
-			});
-		}
-		else {
-			subjectFind();
-		}
+		});
 	});
 });
 
