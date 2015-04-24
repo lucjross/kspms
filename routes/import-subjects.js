@@ -11,7 +11,7 @@ var Pool = require('../models/models').Pool;
 var Subject = require('../models/models').Subject;
 var Section = require('../models/models').Section;
 
-var rerender = function (req, res, csvErrMsg) {
+var _rerender = function (req, res, csvErrMsg) {
 
 	var poolInfo = req.app.locals.getUserTemp(req, 'import-poolInfo');
 	res.render('import-subjects', {
@@ -92,14 +92,18 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 
 			parser.on('error', function (err) {
 				
-				rerender(req, res,
+				_rerender(req, res,
 						'failed to parse');
 			});
 
 			parser.on('finish', function () {
 
+				/*
+				 * PARSING AND VALIDATIONS
+				 */
+
 				if (! output[0] || output[0].length != ROW_LENGTH) {
-					rerender(req, res,
+					_rerender(req, res,
 							'incorrect row length');
 					return;
 				}
@@ -108,21 +112,44 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 				// var matches = output[0].match(/^(\d+)\s-\s(.+)/);
 				var sectionRow = output.shift();
 				var sectionRowMatches = sectionRow[0].match(/^(\d+)\s-\s(.+)/); // TODO: this might return something bad
-				var uniqueID = parseInt(sectionRowMatches[1], 10);
-				var course = sectionRowMatches[2];
-
-				if (! (uniqueID != NaN && uniqueID > 0 &&
-						typeof course === 'string' && course.length > 0)) {
-					rerender(req, res,
+				
+				if (! Array.isArray(sectionRowMatches)) {
+					_rerender(req, res,
 							'header does not contain valid section info');
 					return;
 				}
 
-				// discard headers
+				var uniqueID = parseInt(sectionRowMatches[1], 10);
+				var course = sectionRowMatches[2];
+				if (! (uniqueID != NaN && uniqueID > 0 &&
+						typeof course === 'string' && course.length > 0)) {
+					_rerender(req, res,
+							'header does not contain valid section info');
+					return;
+				}
+
+				// discard column headers
 				output.shift();
 
 				// last row contains totals (not useful)
 				output.pop();
+
+				if (output.length === 0) {
+					_rerender(req, res,
+							'found zero rows of subject data');
+				}
+
+				// make sure all the Subject rows are valid
+				for (var i = 0; i < output.length; i++) {
+					if (output[i].length !== ROW_LENGTH) {
+						_rerender(req, res,
+								'subject row at index ' + i + ' has incorrect length');
+						return;
+					}
+				}
+				// done with validation
+
+
 
 				// now see if the unique ID matches any existing Sections
 				Section.findOne({
@@ -185,7 +212,7 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 			});
 		}
 		else {
-			rerender(req, res,
+			_rerender(req, res,
 						'incorrect file format');
 			_unlink(path);
 		}

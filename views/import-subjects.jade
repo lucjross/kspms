@@ -40,7 +40,7 @@ block content
 	div.content
 		if csvNope
 			div.space-top: div.alert.danger
-				| Parse failed with error, "#{csvNope}." 
+				| Parse failed with error: "#{csvNope}." 
 				| Please revise and resubmit.
 
 		if (existingSection || partialSection)
@@ -51,7 +51,7 @@ block content
 						| A new Section has to be created from the imported data. 
 						| Please enter missing information and review.
 
-		div.c6.space-top
+		div.c5.space-top
 			form.hform(
 					action='/pool/#{_poolId}/import-subjects'
 					method='POST'
@@ -89,9 +89,23 @@ block content
 
 					button(type='submit' disabled) Parse
 
-		div.c3.space-top
+		div.c5.space-top
 			h6: i
 				| Please note:
+			p: i
+				| The imported CSV must be in this format (an asterisk denotes an unused value):
+			p.note.code-example
+				| &lt;unique ID&gt; - &lt;course&gt;,*,*,*,*,*,*,*
+				br/
+				| *,*,*,*,*,*,*,*
+				br/
+				| &lt;last name&gt;,&lt;first name&gt;,&lt;ID&gt;,&lt;e-mail&gt;,&lt;ID&gt;,*,*,*
+				br/
+				| &lt;last name&gt;,&lt;first name&gt;,&lt;ID&gt;,&lt;e-mail&gt;,&lt;ID&gt;,*,*,*
+				br/
+				| [...]
+				br/
+				| *,*,*,*,*,*,*,*
 			p: i
 				| If the imported data specifies a unique ID 
 				| that does not match a Section in the 

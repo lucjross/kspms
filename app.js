@@ -51,7 +51,7 @@ mongoose.connection.on('disconnected', connect);
 //
 
 app.use(expressSession({
-    secret: 'I <3 Kadie',
+    secret: '!l@u#c$a%s',
     store: new MongoStore({
         mongooseConnection: mongoose.connection
     })
