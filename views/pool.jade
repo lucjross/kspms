@@ -45,7 +45,7 @@ block content
                                 | #{val.text}
                 fieldset
                     label Show Removed
-                    input(type='checkbox' name='showRemoved' checked=!!query.showRemoved)/
+                    input(type='checkbox' name='showRemoved' checked=!!query.showRemoved ? 'on' : undefined)/
 
                     //- input(type='radio' name='showRemoved'
                     //-         checked=!!query.showRemoved value='true')/
