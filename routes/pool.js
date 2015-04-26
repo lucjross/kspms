@@ -44,7 +44,7 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 			}
 			else delete q.status;
 
-			if (! /^true$/.test(q.showRemoved)) {
+			if (! /^\w+$/i.test(q.showRemoved)) {
 				subjectConditions['isRemoved'] = q.showRemoved = false;
 			}
 			else q.showRemoved = true;
@@ -93,18 +93,6 @@ router.post(/^\/subject\/([0-9a-z]+)\/(un)?remove$/, auth.isAuthenticated, funct
 	var update = {
 		isRemoved: remove
 	};
-	// Subject.findByIdAndUpdate({ _id: _subjectId }, update, function (err, subject) {
-
-	// 	if (err) {
-	// 		console.error(req.path + ': err=', err);
-	// 		res.sendStatus(500);
-	// 		return;
-	// 	}
-
-	// 	var poolId = subject._poolId;
-	// 	res.redirect('/pool/' + _poolId);
-	// });
-
 
 	updateSubject(_subjectId, update, req, res);
 });

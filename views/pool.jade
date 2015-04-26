@@ -45,12 +45,14 @@ block content
                                 | #{val.text}
                 fieldset
                     label Show Removed
-                    input(type='radio' name='showRemoved'
-                            checked=!!query.showRemoved value='true')/
-                    | Yes
-                    input(style='margin-left: 50px;' type='radio' name='showRemoved'
-                            checked=!query.showRemoved value='false')/
-                    | No
+                    input(type='checkbox' name='showRemoved' checked=!!query.showRemoved)/
+
+                    //- input(type='radio' name='showRemoved'
+                    //-         checked=!!query.showRemoved value='true')/
+                    //- | Yes
+                    //- input(style='margin-left: 50px;' type='radio' name='showRemoved'
+                    //-         checked=!query.showRemoved value='false')/
+                    //- | No
                 button(type='submit') Update
         div.c4
 
