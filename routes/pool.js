@@ -44,10 +44,9 @@ router.get('/pool/:poolId', auth.isAuthenticated, function(req, res) {
 			}
 			else delete q.status;
 
-			if (! /^\w+$/i.test(q.showRemoved)) {
-				subjectConditions['isRemoved'] = q.showRemoved = false;
+			if (! q.showRemoved) {
+				subjectConditions['isRemoved'] = false;
 			}
-			else q.showRemoved = true;
 		}
 
 		Section.find(sectionConditions, function (err, sections) {

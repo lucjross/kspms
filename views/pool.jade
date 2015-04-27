@@ -41,11 +41,11 @@ block content
                     select(name='status' style='width: 240px')
                         option(value='' selected=!query.status)
                         each val, key in statusPaths
-                            option(value='#{key}' selected=(query.status === key))
+                            option(value=key selected=(query.status === key))
                                 | #{val.text}
                 fieldset
                     label Show Removed
-                    input(type='checkbox' name='showRemoved' checked=!!query.showRemoved ? 'on' : undefined)/
+                    input(type='checkbox' name='showRemoved' checked=query.showRemoved)/
 
                     //- input(type='radio' name='showRemoved'
                     //-         checked=!!query.showRemoved value='true')/
