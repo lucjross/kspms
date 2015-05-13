@@ -17,7 +17,8 @@ var subjectSchema = m.Schema({
 	email: String,
 	_sectionOId: {
 		type: m.Schema.Types.ObjectId,
-		required: true
+		required: true,
+		index: true
 	},
 	file: {
 		originalName: String,
@@ -29,6 +30,14 @@ var subjectSchema = m.Schema({
 		default: 'NE'
 	},
 	creditsEarned: {
+		type: Number,
+		default: 0.0
+	},
+	creditsRequired: {
+		type: Number,
+		default: 0.0
+	},
+	overallUnexcusedNoShows: {
 		type: Number,
 		default: 0
 	},

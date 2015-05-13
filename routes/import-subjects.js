@@ -229,14 +229,16 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 				subjects.push({
 					// OIDs must be wrapped because we're using the mongo API instead of mongoose
 					_poolId: mongodb.ObjectID(poolId),
-					lastName: csvSubject[1],
-					firstName: csvSubject[0],
-					utId: csvSubject[2],
-					email: csvSubject[3],
+					lastName: csvSubject[1],			// Last Name
+					firstName: csvSubject[0],			// First Name
+					utId: csvSubject[2], 				// Student ID #
+					email: csvSubject[3],				// Email
 					_sectionOId: mongodb.ObjectID(sectionOIdStr),
 					// Schema defaults don't apply so making them explicit here
 					status: 'NE',
-					creditsEarned: 0,
+					creditsEarned: parseFloat(csvSubject[5]),			// Credits Earned
+					creditsRequired: parseFloat(csvSubject[6]),			// Credits Required
+					overallUnexcusedNoShows: parseInt(csvSubject[7]),	// Overall Unexcused No-Shows
 					comments: '',
 					isRemoved: false
 				});
@@ -245,7 +247,10 @@ router.post('/pool/:poolId/import-subjects', auth.isAuthenticated, function (req
 			Subject.collection.insert(subjects, function (err) {
 
 				if (err) {
-					res.status(500).send({ err: err, message: 'mongoose.collection#insert error' });
+					res.status(500).send({
+						err: err,
+						message: 'mongoose.collection#insert error'
+					});
 					return;
 				}
 
