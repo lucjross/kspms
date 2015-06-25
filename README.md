@@ -6,8 +6,7 @@ for the purposes of academic research projects.
 To get started, you will need to have installed git (https://git-scm.com/),
 MongoDB (https://www.mongodb.org/),
 node.js (https://nodejs.org/),
-npm (https://www.npmjs.com/),
-git (https://git-scm.com/)...
+npm (https://www.npmjs.com/)...
 Am I leaving anything out?
 
 Paths should be configured for these components as necessary.
@@ -26,6 +25,3 @@ Please report bugs!
 Thanks,
 
 Lucas
-
-### Special Thanks
-Kadie Rackley
