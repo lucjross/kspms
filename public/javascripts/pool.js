@@ -160,7 +160,7 @@ function initTableSorter() {
 	if ($subjectTable.find('tbody tr').length > 0) {
 		$subjectTable.tablesorter({
 			sortList: [
-				[3, 0], // Instructor
+				[5, 0], // Instructor
 				[0, 0] // Name
 			],
 			headers: {
